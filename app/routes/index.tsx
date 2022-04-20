@@ -1,6 +1,6 @@
 import { useNavigate } from "@remix-run/react";
 import { useEffect, useState } from "react";
-import { requestToken } from "~/apis/api";
+import { requestToken } from "~/apis/oauth/api";
 
 export default function Index() {
   const navigate = useNavigate();
