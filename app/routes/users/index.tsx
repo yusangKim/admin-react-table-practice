@@ -1,4 +1,6 @@
+import { useEffect } from "react";
 import { useRoutePagination } from "~/utils/hooks/use-route-pagination";
+import { fetchUserList } from "../../apis/users/api";
 
 const UserIndexRoute = () => {
   const {
@@ -12,8 +14,16 @@ const UserIndexRoute = () => {
     setSortBy,
   } = useRoutePagination();
 
-  console.log(pageIndex);
-  console.log(filters);
+  const handleUsers = async () => {
+    const page = 1;
+    const pageSize = 10;
+    const result = await fetchUserList(page, pageSize);
+    console.log(result);
+  };
+
+  useEffect(() => {
+    handleUsers();
+  }, []);
 
   return (
     <>

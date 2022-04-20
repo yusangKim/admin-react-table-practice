@@ -1,6 +1,6 @@
 import { useNavigate } from "@remix-run/react";
 import { useEffect, useState } from "react";
-import { requestToken } from "~/apis/oauth/api";
+import { requestToken } from "~/apis/oauth/token";
 
 export default function Index() {
   const navigate = useNavigate();
@@ -16,6 +16,7 @@ export default function Index() {
   }, []);
 
   const handleLogin = async () => {
+    const grant_type = "password";
     let result = await requestToken(username, password);
 
     console.log(result);

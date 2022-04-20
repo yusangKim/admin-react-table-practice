@@ -14,13 +14,18 @@ interface IRequestTokenResp {
   token_type: string;
 }
 
-export const requestToken = async (username: string, password: string) => {
+export const requestToken = async (
+  // grant_type: string,
+  username?: string,
+  password?: string,
+  refresh_token?: string
+) => {
   const oauthClientId = "proxy-client";
   const oauthClientSecret = "d60227dc-ac65-4f6c-88fd-42fb76530858";
   const oauthScope = "openid profile";
   const oauthTokenEndpoint =
     "https://keycloak.kong.yk8s.me/auth/realms/tarangire-dev/protocol/openid-connect/token";
-  const grant_type = "password";
+
   const basicHeader = Buffer.from(
     `${oauthClientId}:${oauthClientSecret}`
   ).toString("base64");
@@ -29,7 +34,8 @@ export const requestToken = async (username: string, password: string) => {
     authorization: `Basic ${basicHeader}`,
     "Content-Type": "application/x-www-form-urlencoded",
   };
-
+  let grant_type = "password";
+  console.log(grant_type);
   let params;
   if (grant_type === "password") {
     params = qs.stringify({
@@ -39,6 +45,12 @@ export const requestToken = async (username: string, password: string) => {
       scope: oauthScope,
     });
   }
+  // else if (grant_type === "refresh_token") {
+  //   params = qs.stringify({
+  //     grant_type,
+  //     refresh_token,
+  //   });
+  // }
   const resp = await axios.post(oauthTokenEndpoint, params, {
     headers,
   });

@@ -1,11 +1,18 @@
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
 import QueryString from "qs";
+import { requestToken } from "~/apis/oauth/token";
 
 export interface IRequestConfig extends AxiosRequestConfig {
   _retry: boolean;
 }
 
+type refrechToken = {
+  refresh_token: string;
+  grant_type: string;
+};
+
 if (typeof window !== "undefined") {
+  console.log("인터셉터");
   axios.interceptors.request.use(
     function (config: AxiosRequestConfig) {
       const pass = ["/token"];
@@ -26,10 +33,12 @@ if (typeof window !== "undefined") {
 
   axios.interceptors.response.use(
     function (response) {
+      console.log(response);
       return response;
     },
     function (error: AxiosError) {
       const originalRequest = error.config as IRequestConfig;
+      console.log(error);
 
       if (error.response?.status === 401 && !originalRequest._retry) {
         originalRequest._retry = true;
@@ -41,11 +50,13 @@ if (typeof window !== "undefined") {
           grant_type: "refresh_token",
           refresh_token: refreshToken,
         });
-        return axios({
-          method: "POST",
-          data,
-          url: "/api/oauth/token",
-        })
+        // return axios({
+        //   method: "POST",
+        //   data,
+        //   url: "/api/oauth/token",
+        // })
+        let grant_type = "refresh_token";
+        return requestToken(refreshToken, grant_type)
           .then((resp) => {
             const { access_token, refresh_token } = resp.data;
 
@@ -64,7 +75,7 @@ if (typeof window !== "undefined") {
           })
           .catch((err) => {
             // logout api 호출
-            window.location.replace("/login");
+            window.location.replace("/");
             console.log({ err });
             return false;
           });
